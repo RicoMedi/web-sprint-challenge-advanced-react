@@ -1,13 +1,13 @@
 import React from 'react'
-
+import axios from 'axios'
 // I set my initial states
 const initialMessage = ''
 const initialEmail = ''
 const initialIndex = 4 // the index the "B" is at
 const initialSteps = 0
-const intialX = 2
+const initialX = 2
 const initialY = 2
-
+ const URL = `http://localhost:9000/api/result`
 
 /** BrainStorm:
  * its a 3 by 3 matrix
@@ -35,7 +35,7 @@ export default class AppClass extends React.Component {
       email: initialEmail,
       index: initialIndex,
       steps: initialSteps,
-      x: intialX,
+      x: initialX,
       y: initialY
     }
   }
@@ -117,9 +117,13 @@ export default class AppClass extends React.Component {
   move = (evt) => {
     // This event handler can use the helper above to obtain a new index for the "B",
     // and change any states accordingly.
-
+   const moveIndex = this.getNextIndex(evt.target.id);
+   this.setState(prevState => ({
+    index: moveIndex,
+    steps: prevState.state + 1
+   }));
   }
-
+ 
 
   onChange = (evt) => {
     // You will need this to update the value of the input.
@@ -127,7 +131,22 @@ export default class AppClass extends React.Component {
 
   onSubmit = (evt) => {
     // Use a POST request to send a payload to the server.
-  }
+    const newPost={
+      x: this.state.x, 
+      y: this.state.y,
+      steps: this.state.steps,
+      email: this.state.email
+    }
+    axios.post(URL, {newPost})
+    .then( res => {
+      debugger
+    })
+    .catch(err=>{
+      this.setState({...this.state, message: err.response.data.message})
+    })
+    }
+
+  
 
   render() {
     const { className } = this.props
@@ -156,7 +175,7 @@ export default class AppClass extends React.Component {
           <button id="down">DOWN</button>
           <button id="reset">reset</button>
         </div>
-        <form>
+        <form onSubmit={onSubmit}>
           <input id="email" type="email" placeholder="type email"></input>
           <input id="submit" type="submit"></input>
         </form>
