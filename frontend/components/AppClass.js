@@ -8,6 +8,13 @@ const initialEmail = ''
 const initialIndex = 4 // the index the "B" is at
 const initialSteps = 0
 
+const initialState = {
+message: initialMessage,
+email: initialEmail,
+index: initialIndex,
+steps: initialSteps,
+}
+
 const URL = `http://localhost:9000/api/result`
 
 /** BrainStorm:
@@ -29,12 +36,7 @@ const URL = `http://localhost:9000/api/result`
 export default class AppClass extends React.Component {
   // THE FOLLOWING HELPERS ARE JUST RECOMMENDATIONS.
   // You can delete them and build your own logic from scratch.
-   state = {
-      message: initialMessage,
-      email: initialEmail,
-      index: initialIndex,
-      steps: initialSteps,
-    }
+   state = initialState;
   
     
 
@@ -43,24 +45,25 @@ export default class AppClass extends React.Component {
 
 
   getXY = () => {
-    const x = this.state.index % 3;
-    const y = Math.floor(this.state.index / 3);
+    const x = (this.state.index % 3) + 1;
+    const y = Math.floor(this.state.index / 3) + 1;
     return `(${x}, ${y})`;
   }
     // It it not necessary to have a state to track the coordinates.
     // It's enough to know what index the "B" is at, to be able to calculate them.
   
 
+  /**
+   * Helper function to reset all states to their initial values.
+   */
   reset = () => {
-    // Use this helper to reset all states to their initial values.
     this.setState({
-      message: initialMessage,
-      email: initialEmail,
-      index: initialIndex,
-      steps: initialSteps,
-   
-    });
-  }
+      message: '',
+      email: '',
+      index: 4, 
+      steps: 0
+    }) 
+  };
 
 
     // This helper takes a direction ("left", "up", etc) and calculates what the next index
@@ -90,38 +93,37 @@ export default class AppClass extends React.Component {
      * cant be 6 because 6+3 would give me 9 and we only have a max of 8 indx
      */
     getNextIndex = (direction) => {
-      let {index}= this.state;
+      let { index } = this.state;
     
       switch (direction) {
         case 'left':
-          index = index % 3 !== 0 ? index - 1 : index;
-        
-          case 'up':
-          index = index >= 3 ? index - 3 : index;
-        
-          case 'right':
-          index = index % 3 !== 2 ? index + 1 : index;
-        
-          case 'down':
-          index = index < 5 ? index + 3 : index;
-          
+          return index % 3 !== 0 ? index - 1 : index;
+        case 'up':
+          return index >= 3 ? index - 3 : index;
+        case 'right':
+          return index % 3 !== 2 ? index + 1 : index;
+        case 'down':
+          return index < 6 ? index + 3 : index;
+        default:
+          return index;
       }
-      
-      return index;
     };
     
     
+   
+    
+    
 
-  move = (evt) => {
-    // This event handler can use the helper above to obtain a new index for the "B",
-    // and change any states accordingly.
-   const direction = this.getNextIndex(evt.target.id);
-   this.setState({...this.state, 
-    steps: this.state.steps + 1,
-    index: direction
-  
-  });
-  };
+    move = (evt) => {
+      const direction = evt.target.id;
+      const newDirection = this.getNextIndex(direction, this.state.index);
+      this.setState({
+        ...this.state,
+        steps: this.state.steps + 1,
+        index: newDirection,
+      });
+    };
+    
  
 
   onChange = (evt) => {
@@ -138,13 +140,14 @@ export default class AppClass extends React.Component {
 
   
 
-  render(){
+  render(){ 
+   
     const { className } = this.props
     return (
       <div id="wrapper" className={className}>
         <div className="info">
           <h3 id="coordinates">{`Coordinates ${this.getXY()}`}</h3>
-          <h3 id="steps">You moved {this.state.steps}times</h3>
+          <h3 id="steps">You moved {this.state.steps} times</h3>
         </div>
         <div id="grid">
           {
@@ -159,10 +162,10 @@ export default class AppClass extends React.Component {
           <h3 id="message"></h3>
         </div>
         <div id="keypad">
-          <button onClick={()=>this.move("left")} id="left">LEFT</button>
-          <button onClick={()=>this.move('up')} id="up">UP</button>
-          <button onClick={()=>this.move('right')} id="right">RIGHT</button>
-          <button onClick={()=>this.move('down')} id="down">DOWN</button>
+          <button onClick={this.move} id="left">LEFT</button>
+          <button onClick={this.move} id="up">UP</button>
+          <button onClick={this.move} id="right">RIGHT</button>
+          <button onClick={this.move} id="down">DOWN</button>
           <button onClick={this.reset} id="reset">reset</button>
         </div>
         <form onSubmit={this.onSubmit}>
