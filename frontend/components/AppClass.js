@@ -1,13 +1,14 @@
 import React from 'react'
 import axios from 'axios'
 // I set my initial states
+
+
 const initialMessage = ''
 const initialEmail = ''
 const initialIndex = 4 // the index the "B" is at
 const initialSteps = 0
-const initialX = 2
-const initialY = 2
- const URL = `http://localhost:9000/api/result`
+
+const URL = `http://localhost:9000/api/result`
 
 /** BrainStorm:
  * its a 3 by 3 matrix
@@ -28,28 +29,27 @@ const initialY = 2
 export default class AppClass extends React.Component {
   // THE FOLLOWING HELPERS ARE JUST RECOMMENDATIONS.
   // You can delete them and build your own logic from scratch.
-  constructor() {
-    super();
-    this.state = {
+   state = {
       message: initialMessage,
       email: initialEmail,
       index: initialIndex,
       steps: initialSteps,
-      x: initialX,
-      y: initialY
     }
-  }
+  
+    
+
 
 
 
 
   getXY = () => {
-    return (`(${this.state.x}, ${this.state.y})`)
+    const x = this.state.index % 3;
+    const y = Math.floor(this.state.index / 3);
+    return `(${x}, ${y})`;
+  }
     // It it not necessary to have a state to track the coordinates.
     // It's enough to know what index the "B" is at, to be able to calculate them.
-
-
-  }
+  
 
   reset = () => {
     // Use this helper to reset all states to their initial values.
@@ -58,12 +58,11 @@ export default class AppClass extends React.Component {
       email: initialEmail,
       index: initialIndex,
       steps: initialSteps,
-      x: intialX,
-      y: initialY
+   
     });
   }
 
-  getNextIndex = (direction) => {
+
     // This helper takes a direction ("left", "up", etc) and calculates what the next index
     // of the "B" would be. If the move is impossible because we are at the edge of the grid,
     // this helper should return the current index unchanged.
@@ -90,71 +89,62 @@ export default class AppClass extends React.Component {
      * 4 + 3 = 7 nextIndex is now 7
      * cant be 6 because 6+3 would give me 9 and we only have a max of 8 indx
      */
-
-    let nextIndex = this.state.index;
-    if (direction === 'left') {
-      if (nextIndex % 3 !== 0) {
-        nextIndex -= 1;
+    getNextIndex = (direction) => {
+      let {index}= this.state;
+    
+      switch (direction) {
+        case 'left':
+          index = index % 3 !== 0 ? index - 1 : index;
+        
+          case 'up':
+          index = index >= 3 ? index - 3 : index;
+        
+          case 'right':
+          index = index % 3 !== 2 ? index + 1 : index;
+        
+          case 'down':
+          index = index < 5 ? index + 3 : index;
+          
       }
-
-    } else if (direction === 'up') {
-      if (nextIndex >= 3) {
-        nextIndex -= 3;
-      }
-
-    } else if (direction === 'right') {
-      if (nextIndex % 3 !== 2) {
-        nextIndex += 1;
-      }
-    } else if (direction === 'down') {
-      if (nextIndex < 6) {
-        nextIndex += 3;
-      }
-    }
-    return nextIndex
-  }
+      
+      return index;
+    };
+    
+    
 
   move = (evt) => {
     // This event handler can use the helper above to obtain a new index for the "B",
     // and change any states accordingly.
-   const moveIndex = this.getNextIndex(evt.target.id);
-   this.setState(prevState => ({
-    index: moveIndex,
-    steps: prevState.state + 1
-   }));
-  }
+   const direction = this.getNextIndex(evt.target.id);
+   this.setState({...this.state, 
+    steps: this.state.steps + 1,
+    index: direction
+  
+  });
+  };
  
 
   onChange = (evt) => {
     // You will need this to update the value of the input.
+    const {id, value}= evt.target;
+    this.setState({
+      [id]:value,
+    });
   }
 
   onSubmit = (evt) => {
     // Use a POST request to send a payload to the server.
-    const newPost={
-      x: this.state.x, 
-      y: this.state.y,
-      steps: this.state.steps,
-      email: this.state.email
-    }
-    axios.post(URL, {newPost})
-    .then( res => {
-      debugger
-    })
-    .catch(err=>{
-      this.setState({...this.state, message: err.response.data.message})
-    })
-    }
+  }
 
   
 
-  render() {
+  render(){
     const { className } = this.props
     return (
       <div id="wrapper" className={className}>
         <div className="info">
           <h3 id="coordinates">{`Coordinates ${this.getXY()}`}</h3>
-          <h3 id="steps">You moved 0 times</h3>
+          <h3 id="steps">You moved {this.state.steps}times</h3>
         </div>
         <div id="grid">
           {
@@ -169,14 +159,14 @@ export default class AppClass extends React.Component {
           <h3 id="message"></h3>
         </div>
         <div id="keypad">
-          <button id="left">LEFT</button>
-          <button id="up">UP</button>
-          <button id="right">RIGHT</button>
-          <button id="down">DOWN</button>
-          <button id="reset">reset</button>
+          <button onClick={()=>this.move("left")} id="left">LEFT</button>
+          <button onClick={()=>this.move('up')} id="up">UP</button>
+          <button onClick={()=>this.move('right')} id="right">RIGHT</button>
+          <button onClick={()=>this.move('down')} id="down">DOWN</button>
+          <button onClick={this.reset} id="reset">reset</button>
         </div>
-        <form onSubmit={onSubmit}>
-          <input id="email" type="email" placeholder="type email"></input>
+        <form onSubmit={this.onSubmit}>
+          <input id="email" type="email" placeholder="type email" onChange={this.onChange}></input>
           <input id="submit" type="submit"></input>
         </form>
       </div>
