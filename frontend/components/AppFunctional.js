@@ -116,7 +116,7 @@ const AppFunctional = ({ className }) => {
     <div id="wrapper" className={className}>
       <div className="info">
         <h3 id="coordinates">{`Coordinates ${getXYMessage()}`}</h3>
-        <h3 id="steps">{`You moved ${steps} times`}</h3>
+        <h3 id="steps">You moved {steps} {steps !== 1 ?  'times': 'time'}</h3>
       </div>
       <div id="grid">
         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((idx) => (

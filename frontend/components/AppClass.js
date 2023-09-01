@@ -184,7 +184,7 @@ getXYMessage = () => {
       <div id="wrapper" className={className}>
         <div className="info">
           <h3 id="coordinates">{`Coordinates  ${this.getXYMessage()}`}</h3>
-          <h3 id="steps">You moved {this.state.steps} times</h3>
+          <h3 id="steps">You moved {this.state.steps} {this.state.steps !== 1 ? 'times' : 'time'}</h3>
         </div>
         <div id="grid">
           {
