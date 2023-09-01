@@ -7,12 +7,14 @@ const initialMessage = ''
 const initialEmail = ''
 const initialIndex = 4 // the index the "B" is at
 const initialSteps = 0
+const errMessage = ''
 
 const initialState = {
 message: initialMessage,
 email: initialEmail,
 index: initialIndex,
 steps: initialSteps,
+errorMessage: errMessage,
 }
 
 const URL = `http://localhost:9000/api/result`
@@ -44,25 +46,24 @@ export default class AppClass extends React.Component {
 
 
 
-  getXY = () => {
+getXY = () => {
     const x = (this.state.index % 3) + 1;
     const y = Math.floor(this.state.index / 3) + 1;
-    return `(${x}, ${y})`;
+    return {x,y};
   }
     // It it not necessary to have a state to track the coordinates.
     // It's enough to know what index the "B" is at, to be able to calculate them.
-  
+getXYMessage = () => {
+  const {x,y} = this.getXY();
+  return `{${x} ,${y}}`;
+}
 
   /**
    * Helper function to reset all states to their initial values.
    */
   reset = () => {
-    this.setState({
-      message: '',
-      email: '',
-      index: 4, 
-      steps: 0
-    }) 
+    this.setState(initialState);
+     
   };
 
 
@@ -125,7 +126,7 @@ export default class AppClass extends React.Component {
           ...this.state,
           steps: this.state.steps + 1,
           index: newDirection,
-          message: '', 
+          errorMessage, 
         });
       } else {
         
@@ -145,8 +146,7 @@ export default class AppClass extends React.Component {
           default:
             errorMessage = 'Invalid move.';
         }
-      
-        this.setState({ message: errorMessage });
+        this.setState({ ...this.state, errorMessage });
       }
     };
     
@@ -162,29 +162,41 @@ export default class AppClass extends React.Component {
   }
 
   onSubmit = (evt) => {
-    
-  }
+    evt.preventDefault();
+
+    const { x, y } = this.getXY();
+    axios
+      .post(URL, { ...this.state, x, y})
+      .then((resp) => {
+        this.setState({ ...this.state, email: initialEmail, errorMessage: resp.data.message });
+        console.log(resp.data.message);
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  };
+  
 
   render(){ 
-   
+   const {errorMessage}= this.state
     const { className } = this.props
     return (
       <div id="wrapper" className={className}>
         <div className="info">
-          <h3 id="coordinates">{`Coordinates ${this.getXY()}`}</h3>
+          <h3 id="coordinates">{`Coordinates  ${this.getXYMessage()}`}</h3>
           <h3 id="steps">You moved {this.state.steps} times</h3>
         </div>
         <div id="grid">
           {
             [0, 1, 2, 3, 4, 5, 6, 7, 8].map(idx => (
-              <div key={idx} className={`square${idx === 4 ? ' active' : ''}`}>
-                {idx === 4 ? 'B' : null}
+              <div key={idx} className={`square${idx === this.state.index ? ' active' : ''}`}>
+                {idx === this.state.index ? 'B' : null}
               </div>
             ))
           }
         </div>
         <div className="info">
-          <h3 id="message">{this.state.message}</h3>
+          <h3 id="message">{errorMessage}</h3>
         </div>
         <div id="keypad">
           <button onClick={this.move} id="left">LEFT</button>
@@ -194,8 +206,20 @@ export default class AppClass extends React.Component {
           <button onClick={this.reset} id="reset">reset</button>
         </div>
         <form onSubmit={this.onSubmit}>
-          <input id="email" type="email" placeholder="type email" onChange={this.onChange}></input>
-          <input id="submit" type="submit"></input>
+          <input 
+          id="email" 
+          type="email" 
+          placeholder="type email"
+          value={this.state.email} 
+          onChange={this.onChange}>
+
+          </input>
+          <input 
+          id="submit" 
+          type="submit" 
+          value="Submit" >
+
+          </input>
         </form>
       </div>
     )
