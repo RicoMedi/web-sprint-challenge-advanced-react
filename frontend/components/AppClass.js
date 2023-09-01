@@ -117,12 +117,39 @@ export default class AppClass extends React.Component {
     move = (evt) => {
       const direction = evt.target.id;
       const newDirection = this.getNextIndex(direction, this.state.index);
-      this.setState({
-        ...this.state,
-        steps: this.state.steps + 1,
-        index: newDirection,
-      });
+    
+      let errorMessage = '';
+    
+      if (newDirection !== this.state.index) {
+        this.setState({
+          ...this.state,
+          steps: this.state.steps + 1,
+          index: newDirection,
+          message: '', 
+        });
+      } else {
+        
+        switch (direction) {
+          case 'left':
+            errorMessage = "You can't go left.";
+            break;
+          case 'right':
+            errorMessage = "You can't go right.";
+            break;
+          case 'up':
+            errorMessage = "You can't go up.";
+            break;
+          case 'down':
+            errorMessage = "You can't go down.";
+            break;
+          default:
+            errorMessage = 'Invalid move.';
+        }
+      
+        this.setState({ message: errorMessage });
+      }
     };
+    
     
  
 
@@ -135,10 +162,8 @@ export default class AppClass extends React.Component {
   }
 
   onSubmit = (evt) => {
-    // Use a POST request to send a payload to the server.
+    
   }
-
-  
 
   render(){ 
    
@@ -159,7 +184,7 @@ export default class AppClass extends React.Component {
           }
         </div>
         <div className="info">
-          <h3 id="message"></h3>
+          <h3 id="message">{this.state.message}</h3>
         </div>
         <div id="keypad">
           <button onClick={this.move} id="left">LEFT</button>
