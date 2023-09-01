@@ -172,7 +172,7 @@ getXYMessage = () => {
         console.log(resp.data.message);
       })
       .catch((err) => {
-        console.error(err.message);
+        this.setState({email:this.state.email, errorMessage: err.response.data.message});
       });
   };
   

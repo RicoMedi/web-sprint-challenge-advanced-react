@@ -108,7 +108,7 @@ const AppFunctional = ({ className }) => {
         console.log(resp.data.message);
       })
       .catch((err) => {
-        console.error(err.message);
+        setErrorMessage(err.response.data.message);
       });
   };
 
