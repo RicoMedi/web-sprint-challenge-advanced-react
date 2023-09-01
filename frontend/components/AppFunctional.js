@@ -70,19 +70,19 @@ const AppFunctional = ({ className }) => {
 
       switch (direction) {
         case 'left':
-          errorMessage = "You can't go left.";
+          errorMessage = "You can't go left";
           break;
         case 'right':
-          errorMessage = "You can't go right.";
+          errorMessage = "You can't go right";
           break;
         case 'up':
-          errorMessage = "You can't go up.";
+          errorMessage = "You can't go up";
           break;
         case 'down':
-          errorMessage = "You can't go down.";
+          errorMessage = "You can't go down";
           break;
         default:
-          errorMessage = 'Invalid move.';
+          errorMessage = 'Invalid move';
       }
 
       setErrorMessage(errorMessage);
