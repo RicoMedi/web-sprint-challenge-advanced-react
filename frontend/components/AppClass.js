@@ -55,7 +55,7 @@ getXY = () => {
     // It's enough to know what index the "B" is at, to be able to calculate them.
 getXYMessage = () => {
   const {x,y} = this.getXY();
-  return `{${x} ,${y}}`;
+  return `(${x} ,${y})`;
 }
 
   /**
