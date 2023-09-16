@@ -17,7 +17,7 @@ steps: initialSteps,
 errorMessage: errMessage,
 }
 
-const URL = `http://localhost:9000/api/result`
+const URL = `http://localhost:9000/api/result`;
 
 /** BrainStorm:
  * its a 3 by 3 matrix
@@ -26,7 +26,7 @@ const URL = `http://localhost:9000/api/result`
  * [6,7,8]
  *
  * initial index is 4
- * starting coordinates are (1,1)
+ * starting coordinates are (2,2)
  * how to get coordinates for index 4 (?, ?)
  * x= 4%3 gives back a remainder of 1 , 5 %3 gives back 2 so far this looks like it works for this 3x3 matrix, 8 % 3 gives back a remainder of 2
  * y= 4/3 =1.333 math.floor is 1 , 5/3 = 1.666 math.floor is 1 , one more test, 8/3 = 2.666 math.floor is 2
@@ -119,7 +119,7 @@ getXYMessage = () => {
       const direction = evt.target.id;
       const newDirection = this.getNextIndex(direction, this.state.index);
     
-      let errorMessage = '';
+      let errorMessage = ''
     
       if (newDirection !== this.state.index) {
         this.setState({

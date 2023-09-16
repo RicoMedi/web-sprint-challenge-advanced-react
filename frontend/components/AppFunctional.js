@@ -142,14 +142,14 @@ const AppFunctional = ({ className }) => {
           DOWN
         </button>
         <button onClick={reset} id="reset">
-          Reset
+          reset
         </button>
       </div>
       <form onSubmit={onSubmit}>
         <input
           id="email"
           type="email"
-          placeholder="Type email"
+          placeholder="type email"
           value={email}
           onChange={onChange}
         />
